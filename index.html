@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Super Calculator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 700px;
+      margin: 10;
+      background: linear-gradient(120deg, #b8ee15, #66a6ff, rgb(218, 13, 13));
+      transition: background 0.5s;
+    }
+
+    .calculator {
+      background: #1a1a1a;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(8, 202, 31, 0.2);
+      padding: 20px;
+      width: 400px;
+      max-width: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .display {
+      font-size: 44px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+      text-align: right;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    button:hover {
+      background: linear-gradient(120deg, #120cca, rgb(5, 244, 240));
+    }
+
+    .history {
+      margin-left: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .dark {
+      background: #222;
+      color: white;
+    }
+
+    .dark .display {
+      background: #444;
+      color: white;
+    }
+
+    .clock {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    @media(max-width:600px) {
+      .calculator {
+        width: 90%;
+      }
+
+      .history {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="calculator">
+    <div id="display" class="display">0
+
+    </div>
+    <div class="buttons">
+      <button onclick="clearDisplay()">Clear</button>
+      <button onclick="input('%')"><i class="fa-solid fa-percent"></i></button>
+      <button onclick="sqrt()">√</button>
+      <button onclick="backspace()"><i class="fa-solid fa-xmark"></i></button>
+
+      <button onclick="input('7')">7</button>
+      <button onclick="input('8')">8</button>
+      <button onclick="input('9')">9</button>
+      <button onclick="input('/')"><i class="fa-solid fa-divide"></i></button>
+
+      <button onclick="input('4')">4</button>
+      <button onclick="input('5')">5</button>
+      <button onclick="input('6')">6</button>
+      <button onclick="input('*')">×</button>
+
+      <button onclick="input('1')">1</button>
+      <button onclick="input('2')">2</button>
+      <button onclick="input('3')">3</button>
+      <button onclick="input('-')">−</button>
+
+      <button onclick="input('0')">0</button>
+      <button onclick="input('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="input('+')">+</button>
+
+      <button onclick="square()">x²</button>
+      <button onclick="power()">xʸ</button>
+      <button onclick="input('(')">(</button>
+      <button onclick="input(')')">)</button>
+
+      <button onclick="memoryAdd()">M+</button>
+      <button onclick="memorySubtract()">M-</button>
+      <button onclick="memoryRecall()">MR</button>
+      <button onclick="memoryClear()">MC</button>
+    </div>
+    <div class="clock" id="clock"></div>
+    <button onclick="toggleTheme()">🌙/☀️ Theme</button>
+    <button onclick="changeBackground()">🎨 Background</button>
+  </div>
+  <div class="history" id="history">
+    <h3>History</h3>
+  </div>
+
+  <audio id="clickSound" src="https://www.fesliyanstudios.com/play-mp3/387"></audio>
+
+  <script>
+    let display = document.getElementById('display');
+    let history = document.getElementById('history');
+    let memory = 0;
+
+    // Keyboard input
+    document.addEventListener('keydown', (e) => {
+      if (!isNaN(e.key) || ['+', '-', '*', '/', '(', ')', '.'].includes(e.key)) input(e.key);
+      if (e.key === 'Enter') calculate();
+      if (e.key === 'Backspace') backspace();
+      if (e.key === 'Escape') clearDisplay();
+    });
+
+    function playSound()
+     { document.getElementById("clickSound").play(); }
+
+    function input(val) {
+      playSound();
+      if (display.innerText === "0") display.innerText = "";
+      display.innerText += val;
+    }
+
+    function clearDisplay()
+     { playSound(); display.innerText = "0"; }
+
+    function backspace() 
+    { playSound(); display.innerText = display.innerText.slice(0, -1) || "0"; }
+
+    function calculate() {
+      playSound();
+      try {
+        let exp = display.innerText.replace(/÷/g, '/').replace(/×/g, '*');
+        let result = eval(exp);
+        history.innerHTML += `<div>${exp} = ${result}</div>`;
+        if (exp == "1234") window.location.href = "open.html";
+        if (exp == "0000") window.location.href = "admin.html";
+        display.innerText = result;
+      } catch 
+      { display.innerText = "Error"; }
+    }
+
+    function sqrt() 
+    
+    { playSound(); display.innerText = Math.sqrt(eval(display.innerText)); }
+    function square() 
+    
+    { playSound(); display.innerText = Math.pow(eval(display.innerText), 2); }
+    function power() 
+    
+    { playSound(); display.innerText += "**"; }
+
+    // Memory Functions
+    function memoryAdd()
+    
+    { memory += Number(display.innerText); }
+    function memorySubtract() 
+    { memory -= Number(display.innerText); }
+    function memoryRecall()
+     { display.innerText = memory; }
+    function memoryClear() 
+    { memory = 0; }
+
+    // Theme Toggle
+    function toggleTheme()
+    
+    { document.body.classList.toggle("dark"); }
+
+    // Background Change
+    function changeBackground() {
+
+
+      let colors =
+       ["linear-gradient(120deg,#89f7fe,#66a6ff)", "linear-gradient(120deg,#ff9a9e,#fad0c4)", "linear-gradient(120deg,#a1c4fd,#c2e9fb)"];
+      document.body.style.background = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Clock
+    function updateClock() {
+
+      let now = new Date();
+
+
+      document.getElementById("clock").innerText = now.toLocaleTimeString();
+    }
+
+
+
+
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+
+</html>
